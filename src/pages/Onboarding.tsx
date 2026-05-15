@@ -46,8 +46,8 @@ export default function Onboarding() {
       <div className="absolute inset-0 kanga-pattern opacity-5" />
       
       <div className="text-center space-y-6 relative z-10">
-        <h1 className="text-6xl md:text-8xl font-black text-stone-900 serif leading-none tracking-tighter">Your Role in the Mesh</h1>
-        <p className="text-2xl text-brand-red font-black serif italic opacity-80 leading-none">Je, utashiriki vipi katika jumuiya?</p>
+        <h1 className="text-3xl sm:text-5xl md:text-8xl font-black text-stone-900 serif leading-none tracking-tighter">Your Role in the Mesh</h1>
+        <p className="text-lg sm:text-xl md:text-2xl text-brand-red font-black serif italic opacity-80 leading-none">Je, utashiriki vipi katika jumuiya?</p>
         <p className="text-stone-500 font-medium italic max-w-sm mx-auto">Choose how you want to build and benefit from the community.</p>
       </div>
 

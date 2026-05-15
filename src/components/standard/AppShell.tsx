@@ -13,7 +13,7 @@ export default function SmartphoneLayout() {
 
   return (
     <div className="min-h-screen bg-stone-50 selection:bg-brand-indigo/20">
-      <main className={`mx-auto min-h-screen w-full bg-white shadow-2xl md:max-w-md lg:max-w-5xl md:pb-8 relative overflow-hidden flex flex-col ${!isNavHidden ? 'pb-24' : ''}`}>
+      <main className={`mx-auto min-h-screen w-full bg-white shadow-2xl md:max-w-md lg:max-w-5xl md:pb-8 relative overflow-y-auto flex flex-col ${!isNavHidden ? 'pb-20' : ''}`}>
         <div className="fixed inset-0 kanga-pattern opacity-5 pointer-events-none" />
         <div className="relative z-10 flex-1 flex flex-col">
           <Outlet />
@@ -27,12 +27,12 @@ export default function SmartphoneLayout() {
 // Keep AppShell for explicit wrapping in non-layout contexts if needed
 export function AppShell({ children }: { children: React.ReactNode }) {
   const location = useLocation();
-  const hideNavPaths = ['/smartphone/auth', '/smartphone/onboarding']; 
+  const hideNavPaths = ['/smartphone/auth', '/smartphone/onboarding'];
   const isNavHidden = hideNavPaths.some(p => location.pathname.startsWith(p));
 
   return (
     <div className="min-h-screen bg-stone-50 selection:bg-brand-indigo/20">
-      <main className={`mx-auto min-h-screen w-full bg-white shadow-2xl md:max-w-md lg:max-w-5xl md:pb-8 relative overflow-hidden flex flex-col ${!isNavHidden ? 'pb-24' : ''}`}>
+      <main className={`mx-auto min-h-screen w-full bg-white shadow-2xl md:max-w-md lg:max-w-5xl md:pb-8 relative overflow-y-auto flex flex-col ${!isNavHidden ? 'pb-20' : ''}`}>
         <div className="fixed inset-0 kanga-pattern opacity-5 pointer-events-none" />
         <div className="relative z-10 flex-1 flex flex-col">
           {children}
@@ -55,7 +55,7 @@ export function PageHeader({ title, subtitle, action }: { title: string, subtitl
   return (
     <header className="mb-10 flex items-start justify-between px-1">
       <div className="space-y-2">
-        <h1 className="text-4xl font-black serif tracking-tight text-stone-900 sm:text-5xl md:text-6xl leading-[0.9]">
+        <h1 className="text-3xl font-black serif tracking-tight text-stone-900 sm:text-4xl md:text-6xl leading-[0.9]">
           {title}
         </h1>
         {subtitle && (
@@ -97,7 +97,7 @@ function BottomNav() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-20 items-center justify-around border-t border-stone-100 bg-white/95 px-6 pb-safe backdrop-blur-xl md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-stone-100 bg-white/95 px-2 pb-safe backdrop-blur-xl md:hidden">
         {activeRoutes.slice(0, 4).map((route) => {
           const isActive = location.pathname === route.path;
           return (

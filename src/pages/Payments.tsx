@@ -112,10 +112,10 @@ export default function Payments() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="space-y-12"
             >
-              <div className="bg-white rounded-[40px] p-10 shadow-xl space-y-10 border-4 border-stone-100">
+              <div className="bg-white rounded-[28px] sm:rounded-[40px] p-6 sm:p-10 shadow-xl space-y-6 sm:space-y-10 border-2 sm:border-4 border-stone-100">
                 <div className="space-y-3">
                   <label className="text-[10px] uppercase font-black text-stone-400 tracking-[0.3em] pl-4">Amount to Pay (KES)</label>
-                  <div className="text-6xl font-black serif tracking-tighter text-stone-900 leading-none">
+                  <div className="text-4xl sm:text-6xl font-black serif tracking-tighter text-stone-900 leading-none">
                     <span className="text-brand-red">KES</span> {amount}
                   </div>
                 </div>
@@ -129,7 +129,7 @@ export default function Payments() {
                       placeholder="0712 345 678"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full bg-brand-cream p-8 pl-20 rounded-[32px] border-4 border-transparent focus:border-brand-red focus:outline-none font-black text-2xl serif tracking-tight transition-all"
+                      className="w-full bg-brand-cream p-5 pl-14 sm:p-8 sm:pl-20 rounded-[24px] sm:rounded-[32px] border-2 sm:border-4 border-transparent focus:border-brand-red focus:outline-none font-black text-xl sm:text-2xl serif tracking-tight transition-all"
                     />
                   </div>
                   <p className="text-[10px] text-stone-400 pl-4">Safaricom number registered on M-Pesa</p>

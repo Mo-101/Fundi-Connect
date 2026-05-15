@@ -161,7 +161,7 @@ export default function JobRequest() {
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
               required
-              className="w-full bg-white p-8 rounded-[32px] shadow-xl border-4 border-transparent focus:border-brand-red focus:outline-none serif italic text-xl resize-none leading-relaxed"
+              className="w-full bg-white p-5 sm:p-8 rounded-[24px] sm:rounded-[32px] shadow-xl border-2 sm:border-4 border-transparent focus:border-brand-red focus:outline-none serif italic text-base sm:text-xl resize-none leading-relaxed"
             />
           </div>
 
@@ -176,7 +176,7 @@ export default function JobRequest() {
                   value={formData.location}
                   onChange={(e) => setFormData({...formData, location: e.target.value})}
                   required
-                  className="w-full bg-white p-8 pl-20 pr-24 rounded-[32px] shadow-xl border-4 border-transparent focus:border-brand-red focus:outline-none font-black text-xl serif tracking-tight"
+                  className="w-full bg-white p-5 pl-14 pr-16 sm:p-8 sm:pl-20 sm:pr-24 rounded-[24px] sm:rounded-[32px] shadow-xl border-2 sm:border-4 border-transparent focus:border-brand-red focus:outline-none font-black text-base sm:text-xl serif tracking-tight"
                 />
                 <button 
                   type="button"

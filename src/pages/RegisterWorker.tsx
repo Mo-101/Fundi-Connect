@@ -299,7 +299,7 @@ export default function RegisterWorker() {
               onClick={() => fileInputRef.current?.click()}
               className="relative group cursor-pointer"
             >
-              <div className="w-56 h-56 rounded-[64px] bg-white border-2 border-dashed border-stone-200 flex items-center justify-center overflow-hidden transition-all group-hover:border-brand-red group-hover:shadow-2xl group-hover:scale-105 duration-500">
+              <div className="w-40 h-40 sm:w-56 sm:h-56 rounded-[48px] sm:rounded-[64px] bg-white border-2 border-dashed border-stone-200 flex items-center justify-center overflow-hidden transition-all group-hover:border-brand-red group-hover:shadow-2xl group-hover:scale-105 duration-500">
                 {photoPreview ? (
                   <img src={photoPreview} alt="Preview" className="w-full h-full object-cover scale-110 active:scale-100 transition-transform" />
                 ) : (
@@ -454,7 +454,7 @@ export default function RegisterWorker() {
                     value={formData.location}
                     onChange={(e) => handleLocationChange(e.target.value)}
                     onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                    className="w-full bg-white p-8 pl-20 pr-32 rounded-[32px] shadow-xl border-4 border-transparent focus:border-brand-red focus:outline-none font-black text-xl serif tracking-tight"
+                    className="w-full bg-white p-5 pl-14 pr-16 sm:p-8 sm:pl-20 sm:pr-32 rounded-[24px] sm:rounded-[32px] shadow-xl border-2 sm:border-4 border-transparent focus:border-brand-red focus:outline-none font-black text-base sm:text-xl serif tracking-tight"
                   />
                   <button 
                     type="button"

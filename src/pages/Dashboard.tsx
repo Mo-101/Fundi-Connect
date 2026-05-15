@@ -673,7 +673,7 @@ function ClientDashboard({ user, jobs, nearbyWorkers, transactions, onComplete, 
               <button
                 key={worker.userId}
                 onClick={() => navigate(`/smartphone/category/${encodeURIComponent(worker.skills?.[0] || '')}`)}
-                className="relative h-[220px] sm:h-[320px] overflow-hidden rounded-[40px] group active:scale-95 transition-all shadow-xl bg-stone-100"
+                className="relative h-[180px] sm:h-[260px] md:h-[320px] overflow-hidden rounded-[32px] sm:rounded-[40px] group active:scale-95 transition-all shadow-xl bg-stone-100"
               >
                 <img 
                   src={SKILL_IMAGES[worker.skills?.[0] || ''] || null} 

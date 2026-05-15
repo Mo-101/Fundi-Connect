@@ -150,7 +150,7 @@ export default function AsanteDrop() {
                   <button
                     key={amt}
                     onClick={() => setSelected(amt)}
-                    className={`py-8 rounded-[28px] font-black text-2xl serif tracking-tighter transition-all border-4 active:scale-95 ${
+                    className={`py-5 sm:py-8 rounded-[20px] sm:rounded-[28px] font-black text-xl sm:text-2xl serif tracking-tighter transition-all border-2 sm:border-4 active:scale-95 ${
                       selected === amt
                         ? 'bg-brand-red text-white border-brand-red shadow-2xl scale-[1.02]'
                         : 'bg-white text-stone-800 border-stone-100 hover:border-brand-red/30 shadow-sm'
@@ -182,7 +182,7 @@ export default function AsanteDrop() {
               <div className="bg-white rounded-[40px] p-10 shadow-xl border-4 border-stone-100 space-y-8">
                 <div className="text-center space-y-2">
                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-stone-400">Sending</p>
-                  <p className="text-7xl font-black serif tracking-tighter text-stone-900"><span className="text-brand-red text-2xl">cKES</span> {selected}</p>
+                  <p className="text-5xl sm:text-7xl font-black serif tracking-tighter text-stone-900"><span className="text-brand-red text-xl sm:text-2xl">cKES</span> {selected}</p>
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400">≈ KES {selected} · 1 cKES = 1 KES</p>
                 </div>
 

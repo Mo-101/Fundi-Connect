@@ -287,23 +287,23 @@ export default function Home() {
             </div>
             
             <div className="space-y-4">
-               <h1 className="max-w-4xl text-6xl font-black leading-[0.95] tracking-tight md:text-8xl serif">
+               <h1 className="max-w-4xl text-4xl font-black leading-[0.95] tracking-tight sm:text-5xl md:text-6xl lg:text-8xl serif">
                  Local skill, visible.
                </h1>
-               <p className="text-3xl font-black text-brand-red border-l-4 border-brand-red pl-6 serif opacity-80 decoration-brand-gold/30 underline decoration-8 underline-offset-4">
+               <p className="text-xl font-black text-brand-red border-l-4 border-brand-red pl-6 serif opacity-80 decoration-brand-gold/30 underline decoration-8 underline-offset-4 sm:text-2xl md:text-3xl">
                  Ujuzi wa nyumbani, unaonekana.
                </p>
             </div>
 
-            <p className="mt-10 max-w-2xl text-2xl leading-relaxed text-stone-600 serif italic">
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-stone-600 serif italic sm:text-lg md:text-2xl sm:mt-10">
               A dignity-first marketplace for African artisans. Everyone can join — with or without a smartphone. Built for the community, by the community.
             </p>
             
             <div className="mt-12 flex flex-col gap-4 sm:flex-row">
-              <Button onClick={() => navigate('/smartphone/auth')} size="lg" className="h-20 rounded-[24px] bg-brand-red px-10 text-white hover:bg-brand-brown shadow-2xl font-black uppercase tracking-widest text-sm group">
+              <Button onClick={() => navigate('/smartphone/auth')} size="lg" className="h-14 sm:h-20 rounded-[24px] bg-brand-red px-6 sm:px-10 text-white hover:bg-brand-brown shadow-2xl font-black uppercase tracking-widest text-xs sm:text-sm group">
                 I Need Help <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button onClick={() => navigate('/smartphone/auth')} size="lg" className="h-20 rounded-[24px] bg-white border-2 border-stone-200 px-10 text-stone-800 hover:border-black shadow-lg font-black uppercase tracking-widest text-sm">
+              <Button onClick={() => navigate('/smartphone/auth')} size="lg" className="h-14 sm:h-20 rounded-[24px] bg-white border-2 border-stone-200 px-6 sm:px-10 text-stone-800 hover:border-black shadow-lg font-black uppercase tracking-widest text-xs sm:text-sm">
                 I Have a Skill
               </Button>
             </div>
@@ -339,7 +339,7 @@ export default function Home() {
                      </div>
                      <Smartphone className="w-6 h-6 text-brand-indigo opacity-20" />
                   </div>
-                  <div className="p-4 grid grid-cols-2 gap-4 h-[440px]">
+                  <div className="p-4 grid grid-cols-2 gap-4 h-[320px] sm:h-[440px]">
                     {artisans.slice(0, 4).map((a) => (
                       <div key={a.id} className="relative overflow-hidden rounded-[32px] group cursor-pointer shadow-sm border border-stone-100">
                         <img 

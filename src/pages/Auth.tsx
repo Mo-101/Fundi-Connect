@@ -56,7 +56,7 @@ export default function Auth() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white p-10 md:p-16 rounded-[48px] shadow-2xl border border-black/5 max-w-md w-full text-center space-y-8 relative z-10"
+        className="bg-white p-6 sm:p-10 md:p-16 rounded-[32px] sm:rounded-[48px] shadow-2xl border border-black/5 max-w-md w-full text-center space-y-6 sm:space-y-8 relative z-10"
       >
         <div className="flex justify-center">
           <div className="bg-brand-indigo p-6 rounded-[32px] text-brand-gold shadow-2xl group hover:scale-110 transition-transform">
