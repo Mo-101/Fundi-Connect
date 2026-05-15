@@ -1,0 +1,6 @@
+{
+  "name": "FundiConnect Africa",
+  "description": "Connecting local African skilled workers (fundis) with neighbors through a secure M-Pesa enabled marketplace. Features include real-time matching, job lifecycle tracking, and community baraza dispute resolution.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": []
+}

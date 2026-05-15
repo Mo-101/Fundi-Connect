@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FundiConnect | Jua Kali Network</title>
+    <script>
+      // Early suppression of cross-origin frame access errors common in AI Studio environment
+      window.addEventListener('error', function(e) {
+        if (e.message && (e.message.includes('origin') || e.message.includes('cross-origin') || e.message.includes('Location.origin'))) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      }, true);
+      window.addEventListener('unhandledrejection', function(e) {
+        const message = e.reason?.message || String(e.reason);
+        if (message && (message.includes('origin') || message.includes('cross-origin'))) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      }, true);
+    </script>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#BF102E" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces", serif;
+  
+  --color-brand-red: #C8102E;
+  --color-brand-gold: #E5A93D;
+  --color-brand-indigo: #1A1F4A;
+  --color-brand-brown: #5C3317;
+  --color-brand-cream: #F5EFE0;
+  --color-brand-black: #121212;
+
+  --shadow-neumorph-raised: 12px 12px 24px #e0dbce, -12px -12px 24px #ffffff;
+  --shadow-neumorph-flat: 4px 4px 8px #e0dbce, -4px -4px 8px #ffffff;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-brand-cream text-brand-black;
+  }
+  
+  h1, h2, h3, h4, .serif {
+    @apply font-serif font-black;
+  }
+}
+
+@layer utilities {
+  .neumorph-raised {
+    box-shadow: var(--shadow-neumorph-raised);
+  }
+  .neumorph-flat {
+    box-shadow: var(--shadow-neumorph-flat);
+  }
+  .earth-map-overlay {
+    background: linear-gradient(to bottom, rgba(245, 239, 224, 0.9), rgba(245, 239, 224, 0.4));
+  }
+}
+
+.kanga-pattern {
+  background-image: radial-gradient(#C8102E 1px, transparent 1px);
+  background-size: 12px 12px;
+  opacity: 0.05;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
