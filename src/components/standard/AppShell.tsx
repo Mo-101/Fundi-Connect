@@ -13,8 +13,8 @@ export default function SmartphoneLayout() {
 
   return (
     <div className="min-h-screen bg-stone-50 selection:bg-brand-indigo/20">
-      <main className={`mx-auto min-h-screen w-full bg-white shadow-2xl md:max-w-md lg:max-w-5xl md:pb-8 relative overflow-y-auto flex flex-col ${!isNavHidden ? 'pb-20' : ''}`}>
-        <div className="fixed inset-0 kanga-pattern opacity-5 pointer-events-none" />
+      <main className={`mx-auto min-h-screen w-full bg-white shadow-2xl md:max-w-md lg:max-w-5xl md:pb-8 relative flex flex-col ${!isNavHidden ? 'pb-20' : ''}`}>
+        <div className="absolute inset-0 kanga-pattern opacity-5 pointer-events-none" />
         <div className="relative z-10 flex-1 flex flex-col">
           <Outlet />
         </div>
@@ -32,8 +32,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-stone-50 selection:bg-brand-indigo/20">
-      <main className={`mx-auto min-h-screen w-full bg-white shadow-2xl md:max-w-md lg:max-w-5xl md:pb-8 relative overflow-y-auto flex flex-col ${!isNavHidden ? 'pb-20' : ''}`}>
-        <div className="fixed inset-0 kanga-pattern opacity-5 pointer-events-none" />
+      <main className={`mx-auto min-h-screen w-full bg-white shadow-2xl md:max-w-md lg:max-w-5xl md:pb-8 relative flex flex-col ${!isNavHidden ? 'pb-20' : ''}`}>
+        <div className="absolute inset-0 kanga-pattern opacity-5 pointer-events-none" />
         <div className="relative z-10 flex-1 flex flex-col">
           {children}
         </div>
@@ -45,7 +45,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
 export function PageContainer({ children, className = "" }: { children: React.ReactNode, className?: string }) {
   return (
-    <section className={`w-full px-5 py-6 sm:px-8 md:px-10 md:py-10 animate-in fade-in slide-in-from-bottom-2 duration-500 ${className}`}>
+    <section className={`w-full px-4 py-5 sm:px-8 md:px-10 md:py-10 animate-in fade-in slide-in-from-bottom-2 duration-500 ${className}`}>
       {children}
     </section>
   );

@@ -256,18 +256,18 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-brand-cream text-stone-900 selection:bg-brand-red/10">
-      <section className="relative overflow-hidden px-6 py-8 md:px-10 lg:px-16">
+      <section className="relative px-4 py-6 md:px-10 lg:px-16 overflow-x-hidden">
         <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-brand-gold/20 blur-3xl opacity-50 pointer-events-none" />
         <div className="absolute -left-24 top-72 h-80 w-80 rounded-full bg-brand-red/10 blur-3xl opacity-50 pointer-events-none" />
 
-        <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between rounded-[32px] border border-black/5 bg-white/60 p-4 shadow-xl backdrop-blur-xl">
-          <div className="flex items-center gap-4 pl-4 cursor-pointer" onClick={() => navigate('/')}>
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-indigo text-brand-gold shadow-lg">
-              <Hammer className="h-6 w-6" />
+        <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between rounded-[24px] sm:rounded-[32px] border border-black/5 bg-white/60 p-3 sm:p-4 shadow-xl backdrop-blur-xl">
+          <div className="flex items-center gap-3 pl-2 sm:pl-4 cursor-pointer" onClick={() => navigate('/')}>
+            <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-brand-indigo text-brand-gold shadow-lg">
+              <Hammer className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
-            <div>
-              <p className="font-black tracking-tight text-xl leading-none">FundiConnect</p>
-              <p className="text-[10px] text-stone-500 font-black uppercase tracking-[0.2em] mt-1">SkillMesh Africa</p>
+            <div className="hidden xs:block sm:block">
+              <p className="font-black tracking-tight text-base sm:text-xl leading-none">FundiConnect</p>
+              <p className="text-[9px] text-stone-500 font-black uppercase tracking-[0.2em] mt-0.5">SkillMesh Africa</p>
             </div>
           </div>
           <div className="hidden items-center gap-10 text-[11px] font-black uppercase tracking-[0.15em] text-stone-400 md:flex">
@@ -277,7 +277,10 @@ export default function Home() {
             <button onClick={() => navigate('/offline')} className="hover:text-brand-red transition-colors">Offline</button>
             <button onClick={() => document.getElementById('trust')?.scrollIntoView({ behavior: 'smooth'})} className="hover:text-brand-red transition-colors">Usalama</button>
           </div>
-          <Button onClick={() => navigate('/smartphone/auth')} className="rounded-2xl bg-brand-indigo h-14 px-8 hover:bg-brand-brown text-white shadow-xl font-black uppercase tracking-widest text-xs">Anza Hapa</Button>
+          <Button onClick={() => navigate('/smartphone/auth')} className="shrink-0 rounded-xl sm:rounded-2xl bg-brand-indigo h-10 sm:h-14 px-4 sm:px-8 hover:bg-brand-brown text-white shadow-xl font-black uppercase tracking-widest text-[10px] sm:text-xs whitespace-nowrap">
+            <span className="sm:hidden">Anza</span>
+            <span className="hidden sm:inline">Anza Hapa</span>
+          </Button>
         </nav>
 
         <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-10 py-16 lg:grid-cols-[1.1fr_.9fr] lg:py-32">
