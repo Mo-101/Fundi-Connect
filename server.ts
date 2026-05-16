@@ -1,11 +1,53 @@
 import express from "express";
 import path from "path";
+import https from "https";
 import { neon } from "@neondatabase/serverless";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
+type SqlFn = (strings: TemplateStringsArray, ...values: unknown[]) => Promise<Record<string, unknown>[]>;
+
+// In WSL2, Node.js undici and the @neondatabase/serverless WebSocket driver both
+// time out due to MTU fragmentation on the Hyper-V virtual NIC (1280 byte MTU).
+// curl / https.request work fine because they use the system OpenSSL stack.
+// For local dev we call the Neon HTTP SQL endpoint directly via https.request.
+function makeLocalSql(connStr: string): SqlFn {
+  const u = new URL(connStr.replace(/^postgres(ql)?:\/\//, "https://"));
+  const host = u.hostname;
+  return async (strings, ...values) => {
+    let i = 0;
+    const query = strings.reduce((acc, s) => acc + s + (i < values.length ? `$${++i}` : ""), "");
+    const body = JSON.stringify({ query, params: values });
+    return new Promise((resolve, reject) => {
+      const req = https.request(
+        { hostname: host, path: "/sql", method: "POST", rejectUnauthorized: false,
+          headers: { "Content-Type": "application/json", "Neon-Connection-String": connStr,
+            "Content-Length": Buffer.byteLength(body) } },
+        (res) => {
+          const chunks: Buffer[] = [];
+          res.on("data", (c: Buffer) => chunks.push(c));
+          res.on("end", () => {
+            try {
+              const data = JSON.parse(Buffer.concat(chunks).toString());
+              if (data.message) reject(new Error(data.message));
+              else resolve((data.rows ?? []) as Record<string, unknown>[]);
+            } catch (e) { reject(e); }
+          });
+        }
+      );
+      req.on("error", reject);
+      req.write(body);
+      req.end();
+    });
+  };
+}
+
+const sql: SqlFn | null = process.env.DATABASE_URL
+  ? (process.env.VERCEL
+      ? neon(process.env.DATABASE_URL) as unknown as SqlFn
+      : makeLocalSql(process.env.DATABASE_URL))
+  : null;
 
 // ── DB Init ────────────────────────────────────────────────────────────────
 // Cached promise so all requests await the same init (no race on cold start)

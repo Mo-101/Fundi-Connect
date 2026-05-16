@@ -16,8 +16,17 @@ export default defineConfig(({mode}) => {
       },
     },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
       hmr: false,
+      port: 4000,
+      // Proxy /api to Vercel so local dev uses the live DB without needing
+      // the Express server to connect to Neon from WSL (WSL2 MTU bug).
+      proxy: {
+        '/api': {
+          target: 'https://fundi-connect-beryl.vercel.app',
+          changeOrigin: true,
+          secure: true,
+        },
+      },
     },
     test: {
       environment: 'jsdom',
