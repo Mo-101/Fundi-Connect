@@ -58,12 +58,17 @@ async function initDb() {
     console.warn("DATABASE_URL not found. Skipping DB initialization.");
     return;
   }
-  try {
-    await sql`SELECT 1`;
-    console.log("Database connection successful.");
-  } catch (err) {
-    console.error("Database connection failed:", err);
-    throw err;
+  // Retry up to 4 times — Neon free tier auto-pauses and can take a few seconds to wake
+  for (let attempt = 1; attempt <= 4; attempt++) {
+    try {
+      await sql`SELECT 1`;
+      console.log("Database connection successful.");
+      break;
+    } catch (err) {
+      console.error(`Database connection attempt ${attempt} failed:`, err);
+      if (attempt === 4) throw err;
+      await new Promise(r => setTimeout(r, attempt * 1000));
+    }
   }
   try {
     await sql`

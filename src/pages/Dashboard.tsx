@@ -154,9 +154,10 @@ export default function Dashboard() {
     if (user?.role === 'introducer') {
       return <IntroducerDashboard user={user} />;
     }
+    if (!user) return null;
     return (
-      <ClientDashboard 
-        user={user!} 
+      <ClientDashboard
+        user={user}
         jobs={recentJobs} 
         nearbyWorkers={nearbyWorkers}
         transactions={transactions}

@@ -9,7 +9,7 @@ async function handleResponse(res: Response) {
     try {
       const data = await res.json();
       if (data.error) errorMsg += ` - ${data.error}`;
-      if (data.details) errorMsg += ` (Details: ${data.details})`;
+      if (data.detail) errorMsg += ` (Details: ${data.detail})`;
     } catch {
       // Not JSON or no error field
     }
