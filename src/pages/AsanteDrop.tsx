@@ -31,6 +31,8 @@ export default function AsanteDrop() {
 
   const jobId = searchParams.get('jobId');
   const workerName = searchParams.get('worker') || 'the fundi';
+  const nextRoute = searchParams.get('next') || '/smartphone/dashboard';
+  const isEntry = searchParams.get('entry') === 'true';
   const miniPay = isMiniPayBrowser();
   const hasCelo = isCeloWalletAvailable();
 
@@ -99,7 +101,10 @@ export default function AsanteDrop() {
 
   return (
     <PageContainer>
-      <PageHeader title="Asante Drop." subtitle="Your drop keeps the mesh alive." />
+      <PageHeader
+        title="Asante Drop."
+        subtitle={isEntry ? "Support the platform — 100% voluntary." : "Your drop keeps the mesh alive."}
+      />
 
       <div className="max-w-xl mx-auto py-8">
         <AnimatePresence mode="wait">
@@ -111,7 +116,14 @@ export default function AsanteDrop() {
               {/* Context banner */}
               <div className="bg-brand-red/5 border border-brand-red/10 rounded-[32px] p-6 text-center space-y-2">
                 <Heart className="w-8 h-8 text-brand-red mx-auto fill-brand-red/20" />
-                <p className="font-black text-stone-700 serif text-lg tracking-tight">Did {workerName} serve you well?</p>
+                {isEntry ? (
+                  <>
+                    <p className="font-black text-stone-700 serif text-lg tracking-tight">Help keep FundiConnect alive</p>
+                    <p className="text-stone-500 text-sm mt-1">This platform is free for everyone. A small drop helps us keep the lights on.</p>
+                  </>
+                ) : (
+                  <p className="font-black text-stone-700 serif text-lg tracking-tight">Did {workerName} serve you well?</p>
+                )}
                 <p className="text-[10px] font-black uppercase tracking-[0.25em] text-stone-400">
                   Voluntary · KES 10–100 · 100% goes to platform survival
                 </p>
@@ -168,6 +180,13 @@ export default function AsanteDrop() {
                 className="w-full bg-stone-900 text-white py-8 rounded-[32px] font-black text-xs uppercase tracking-[0.4em] shadow-xl hover:bg-brand-red transition-all disabled:opacity-40 disabled:grayscale active:scale-95"
               >
                 {!wallet ? 'Connect Wallet First' : !selected ? 'Pick an Amount' : `Drop KES ${selected} via cKES`}
+              </button>
+
+              <button
+                onClick={() => navigate(nextRoute)}
+                className="w-full text-stone-400 py-4 font-black text-xs uppercase tracking-widest hover:text-brand-red transition-colors"
+              >
+                {isEntry ? 'Skip for now — enter the app' : 'Skip'}
               </button>
 
               <p className="text-center text-[9px] font-black uppercase tracking-[0.2em] text-stone-300">
@@ -256,8 +275,8 @@ export default function AsanteDrop() {
                 View on Celoscan
               </a>
 
-              <button onClick={() => navigate('/smartphone/dashboard')} className="w-full bg-stone-900 text-white py-8 rounded-[32px] font-black text-xs uppercase tracking-[0.4em] shadow-xl hover:bg-brand-red transition-all">
-                Back to Dashboard
+              <button onClick={() => navigate(nextRoute)} className="w-full bg-stone-900 text-white py-8 rounded-[32px] font-black text-xs uppercase tracking-[0.4em] shadow-xl hover:bg-brand-red transition-all">
+                {isEntry ? 'Enter the App' : 'Back to Dashboard'}
               </button>
             </motion.div>
           )}

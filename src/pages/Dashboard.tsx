@@ -81,7 +81,7 @@ export default function Dashboard() {
           setRecentJobs(myJobs.slice(0, 5));
 
           const workers = await api.getWorkers();
-          setNearbyWorkers(workers.slice(0, 4) as any);
+          setNearbyWorkers(workers as any);
         }
       } catch (err) {
         console.error("Dashboard data fetch error:", err);
@@ -660,15 +660,31 @@ function ClientDashboard({ user, jobs, nearbyWorkers, transactions, onComplete, 
         </div>
       </section>
 
-      {nearbyWorkers.length > 0 && (
-        <section className="space-y-8 px-1">
-          <div className="flex justify-between items-end px-3">
-            <div className="space-y-1">
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-red leading-none">Verified neighbors</p>
-              <h3 className="text-2xl font-black tracking-tight serif leading-none">Neighbor Matching</h3>
-            </div>
+      <section className="space-y-8 px-1">
+        <div className="flex justify-between items-end px-3">
+          <div className="space-y-1">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-red leading-none">Registered Fundis</p>
+            <h3 className="text-2xl font-black tracking-tight serif leading-none">
+              {nearbyWorkers.length > 0 ? `${nearbyWorkers.length} Fundi${nearbyWorkers.length !== 1 ? 's' : ''} Online` : 'Find a Fundi'}
+            </h3>
           </div>
-          
+          <button
+            onClick={() => navigate('/smartphone/mesh')}
+            className="text-[10px] font-black uppercase tracking-widest text-brand-indigo hover:text-brand-red transition-all underline underline-offset-4 decoration-2"
+          >
+            Map View
+          </button>
+        </div>
+
+        {nearbyWorkers.length === 0 ? (
+          <div className="text-center py-20 bg-stone-50 rounded-[48px] border-2 border-dashed border-stone-200">
+            <div className="w-16 h-16 bg-white rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-sm">
+              <Hammer className="w-8 h-8 text-stone-200" />
+            </div>
+            <p className="text-stone-500 serif italic text-lg leading-none">No fundis registered yet.</p>
+            <p className="text-stone-400 text-xs mt-3 font-black uppercase tracking-widest">Be the first — register your skill</p>
+          </div>
+        ) : (
           <div className="grid grid-cols-2 gap-4 sm:gap-6">
             {nearbyWorkers.map((worker) => (
               <button
@@ -676,9 +692,9 @@ function ClientDashboard({ user, jobs, nearbyWorkers, transactions, onComplete, 
                 onClick={() => navigate(`/smartphone/category/${encodeURIComponent(worker.skills?.[0] || '')}`)}
                 className="relative h-[180px] sm:h-[260px] md:h-[320px] overflow-hidden rounded-[32px] sm:rounded-[40px] group active:scale-95 transition-all shadow-xl bg-stone-100"
               >
-                <img 
-                  src={SKILL_IMAGES[worker.skills?.[0] || ''] || null} 
-                  alt={worker.skills?.[0]} 
+                <img
+                  src={SKILL_IMAGES[worker.skills?.[0] || ''] || null}
+                  alt={worker.skills?.[0]}
                   className="absolute inset-0 w-full h-full object-cover grayscale-[0.1]"
                   referrerPolicy="no-referrer"
                 />
@@ -689,7 +705,7 @@ function ClientDashboard({ user, jobs, nearbyWorkers, transactions, onComplete, 
                   </p>
                   <div className="flex items-center gap-1.5 mt-3">
                     <Star className="w-3 h-3 text-brand-gold fill-brand-gold" />
-                    <span className="text-[9px] font-black text-white/80 uppercase tracking-widest">{worker.trustScore}% Trust</span>
+                    <span className="text-[9px] font-black text-white/80 uppercase tracking-widest">{worker.trustScore ?? 0}% Trust</span>
                   </div>
                 </div>
                 {worker.trustLevel === 'verified' && (
@@ -700,8 +716,8 @@ function ClientDashboard({ user, jobs, nearbyWorkers, transactions, onComplete, 
               </button>
             ))}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
       <section className="space-y-8 px-1">
         <div className="space-y-1 px-3">

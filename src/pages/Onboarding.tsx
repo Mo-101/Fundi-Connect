@@ -38,7 +38,8 @@ export default function Onboarding() {
     if (role === 'worker') {
       navigate('/smartphone/register-skill');
     } else {
-      navigate('/smartphone/dashboard');
+      // Clients see the voluntary Asante Drop page before entering the app
+      navigate('/smartphone/asante-drop?next=/smartphone/dashboard&entry=true');
     }
   };
 
