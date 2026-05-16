@@ -515,8 +515,8 @@ app.post("/api/mpesa/stk-push", async (req, res) => {
   const { phone, amount, jobId, type, userId } = req.body;
   console.log(`[DARAJA] STK Push: ${phone} KES ${amount} (${type})`);
   const transactionId = `tr_${Date.now()}`;
-  const reference = (jobId || type || transactionId).substring(0, 12);
-  const description = type === "registration" ? "FC Registration" : "FundiConnect Pay";
+  const reference = "FundiConnect";
+  const description = type === "registration" ? "FC Reg KES 100" : "FundiConnect Pay";
 
   if (hasDaraja()) {
     try {
@@ -684,7 +684,7 @@ if (process.env.NODE_ENV === "production" && !process.env.VERCEL) {
 if (!process.env.VERCEL) {
   const PORT = process.env.PORT || 3000;
   (async () => {
-    await initDb();
+    try { await initDb(); } catch { console.warn("[FUNDICONNECT] DB unavailable — running in demo mode"); }
     if (process.env.NODE_ENV !== "production") {
       const { createServer: createViteServer } = await import("vite");
       const vite = await createViteServer({ server: { middlewareMode: true }, appType: "spa" });

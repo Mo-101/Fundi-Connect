@@ -16,7 +16,7 @@ import { PageContainer, PageHeader } from '../components/standard/AppShell';
 
 type Step = 'pick' | 'confirm' | 'sending' | 'success' | 'failed';
 
-const AMOUNTS = [10, 20, 50, 100];
+const AMOUNTS = [10, 20, 50, 100]; // KES — voluntary, max 100
 
 export default function AsanteDrop() {
   const [searchParams] = useSearchParams();
@@ -113,7 +113,7 @@ export default function AsanteDrop() {
                 <Heart className="w-8 h-8 text-brand-red mx-auto fill-brand-red/20" />
                 <p className="font-black text-stone-700 serif text-lg tracking-tight">Did {workerName} serve you well?</p>
                 <p className="text-[10px] font-black uppercase tracking-[0.25em] text-stone-400">
-                  100% goes to platform survival. No fundi takes a cent.
+                  Voluntary · KES 10–100 · 100% goes to platform survival
                 </p>
               </div>
 

@@ -38,6 +38,7 @@ export default function RegisterWorker() {
   const [tosAccepted, setTosAccepted] = useState(false);
   const [paymentInitiated, setPaymentInitiated] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'waiting' | 'confirmed' | 'failed'>('idle');
   
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState(SKILL_SECTIONS[0].id);
@@ -112,22 +113,48 @@ export default function RegisterWorker() {
     }));
   };
 
+  const pollPaymentStatus = async (checkoutRequestId: string, attempts = 0) => {
+    const MAX_ATTEMPTS = 24; // 2 minutes at 5s intervals
+    try {
+      const result = await api.checkPaymentStatus(checkoutRequestId);
+      if (result.status === 'completed') {
+        setPaymentStatus('confirmed');
+        setPaymentSuccess(true);
+      } else if (result.status === 'failed') {
+        setPaymentStatus('failed');
+        setPaymentInitiated(false);
+      } else if (attempts < MAX_ATTEMPTS) {
+        setTimeout(() => pollPaymentStatus(checkoutRequestId, attempts + 1), 5000);
+      } else {
+        // Timed out — let user retry
+        setPaymentStatus('failed');
+        setPaymentInitiated(false);
+      }
+    } catch {
+      if (attempts < MAX_ATTEMPTS) {
+        setTimeout(() => pollPaymentStatus(checkoutRequestId, attempts + 1), 5000);
+      }
+    }
+  };
+
   const initiateMpesaPayment = async () => {
     const userId = localStorage.getItem('mesh_user_id');
     if (!userId) return;
 
     setPaymentInitiated(true);
+    setPaymentStatus('waiting');
     try {
-      await api.initiateSTKPush({
+      const resp = await api.initiateSTKPush({
         phone: formData.phone || userId.replace('user_', ''),
         amount: 100,
         type: 'registration',
         userId
       });
-      setPaymentSuccess(true);
+      // Start polling — success only after user enters PIN on their phone
+      pollPaymentStatus(resp.checkoutRequestId || resp.CheckoutRequestID);
     } catch (err) {
       console.error(err);
-      alert("M-Pesa request failed. Please try again.");
+      setPaymentStatus('failed');
       setPaymentInitiated(false);
     }
   };
@@ -538,21 +565,35 @@ export default function RegisterWorker() {
                   <p className="text-7xl font-black tracking-tighter serif text-stone-900 leading-none">KES 100</p>
                   
                   <div className="mt-12 space-y-6">
-                     {!paymentInitiated ? (
-                       <button 
+                     {paymentStatus === 'idle' && (
+                       <button
                          onClick={initiateMpesaPayment}
                          className="w-full py-7 bg-brand-indigo text-white rounded-[32px] font-black uppercase tracking-[0.2em] text-xs flex items-center justify-center gap-4 shadow-2xl hover:bg-brand-brown transition-all group active:scale-95"
                        >
-                         Pay via M-Pesa <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                         Pay KES 100 via M-Pesa <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                        </button>
-                     ) : !paymentSuccess ? (
+                     )}
+                     {paymentStatus === 'waiting' && (
                        <div className="flex flex-col items-center gap-6 py-4">
                           <div className="w-12 h-12 border-4 border-brand-red border-t-transparent rounded-full animate-spin" />
-                          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-brand-red animate-pulse">Waiting for M-Pesa PIN...</p>
+                          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-brand-red animate-pulse">Check your phone — enter M-Pesa PIN to confirm</p>
+                          <p className="text-[9px] text-stone-400 font-black uppercase tracking-widest">Do not close this screen</p>
                        </div>
-                     ) : (
-                       <motion.div 
-                         initial={{ scale: 0.9, opacity: 0 }} 
+                     )}
+                     {paymentStatus === 'failed' && (
+                       <div className="flex flex-col items-center gap-4">
+                          <p className="text-xs font-black text-brand-red uppercase tracking-widest">Payment cancelled or timed out</p>
+                          <button
+                            onClick={() => { setPaymentStatus('idle'); setPaymentInitiated(false); }}
+                            className="w-full py-5 bg-stone-100 text-stone-700 rounded-[24px] font-black uppercase tracking-[0.2em] text-xs hover:bg-brand-red hover:text-white transition-all"
+                          >
+                            Try Again
+                          </button>
+                       </div>
+                     )}
+                     {paymentStatus === 'confirmed' && (
+                       <motion.div
+                         initial={{ scale: 0.9, opacity: 0 }}
                          animate={{ scale: 1, opacity: 1 }}
                          className="bg-brand-gold/10 p-8 rounded-[40px] text-brand-brown space-y-3 border border-brand-gold/20"
                        >
@@ -561,8 +602,8 @@ export default function RegisterWorker() {
                                 <Check className="w-8 h-8" />
                              </div>
                           </div>
-                          <p className="font-black text-2xl serif leading-none">Hamsini Imekubaliwa!</p>
-                          <p className="text-[10px] font-black uppercase tracking-widest opacity-60">TXN: QRT82NKLA0</p>
+                          <p className="font-black text-2xl serif leading-none">Malipo Yamekubaliwa!</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest opacity-60">KES 100 · One-time fee · Done forever</p>
                        </motion.div>
                      )}
                   </div>
