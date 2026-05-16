@@ -187,15 +187,25 @@ async function initDb() {
     try { await sql`ALTER TABLE messages ADD CONSTRAINT fk_msg_sender FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE SET NULL`; } catch (e) {}
     try { await sql`ALTER TABLE vouches ADD CONSTRAINT fk_vouch_voucher FOREIGN KEY (voucher_id) REFERENCES users(id) ON DELETE CASCADE`; } catch (e) {}
     try { await sql`ALTER TABLE vouches ADD CONSTRAINT fk_vouch_worker FOREIGN KEY (worker_id) REFERENCES users(id) ON DELETE CASCADE`; } catch (e) {}
-    try {
-      await sql`ALTER TABLE users ALTER COLUMN name DROP NOT NULL`;
-      await sql`ALTER TABLE users ALTER COLUMN phone DROP NOT NULL`;
-      await sql`ALTER TABLE users ALTER COLUMN role DROP NOT NULL`;
-      await sql`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS disputes_count INTEGER DEFAULT 0`;
-      await sql`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS avg_rating NUMERIC DEFAULT 0`;
-      await sql`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS is_vouched BOOLEAN DEFAULT FALSE`;
-      await sql`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS registration_paid BOOLEAN DEFAULT FALSE`;
-    } catch (migErr) {}
+    // Each migration runs independently so one failure doesn't block the rest
+    const migrate = async (q: TemplateStringsArray, ...v: unknown[]) => { try { await sql!(q, ...v); } catch (_) {} };
+    await migrate`ALTER TABLE users ADD COLUMN IF NOT EXISTS name TEXT`;
+    await migrate`ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT`;
+    await migrate`ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT`;
+    await migrate`ALTER TABLE users ADD COLUMN IF NOT EXISTS location TEXT`;
+    await migrate`ALTER TABLE users ADD COLUMN IF NOT EXISTS access_type TEXT`;
+    await migrate`ALTER TABLE users ADD COLUMN IF NOT EXISTS photo_url TEXT`;
+    await migrate`ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP`;
+    await migrate`ALTER TABLE users ALTER COLUMN name DROP NOT NULL`;
+    await migrate`ALTER TABLE users ALTER COLUMN phone DROP NOT NULL`;
+    await migrate`ALTER TABLE users ALTER COLUMN role DROP NOT NULL`;
+    await migrate`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS disputes_count INTEGER DEFAULT 0`;
+    await migrate`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS avg_rating NUMERIC DEFAULT 0`;
+    await migrate`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS is_vouched BOOLEAN DEFAULT FALSE`;
+    await migrate`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS registration_paid BOOLEAN DEFAULT FALSE`;
+    await migrate`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS bio TEXT`;
+    await migrate`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS lat NUMERIC`;
+    await migrate`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS lng NUMERIC`;
     console.log("Database initialized successfully.");
   } catch (err) {
     console.error("Failed to initialize database:", err);
