@@ -8,6 +8,9 @@ dotenv.config();
 const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
 
 // ── DB Init ────────────────────────────────────────────────────────────────
+// Cached promise so all requests await the same init (no race on cold start)
+let dbInitPromise: Promise<void> | null = null;
+
 async function initDb() {
   if (!sql) {
     console.warn("DATABASE_URL not found. Skipping DB initialization.");
@@ -17,8 +20,8 @@ async function initDb() {
     await sql`SELECT 1`;
     console.log("Database connection successful.");
   } catch (err) {
-    console.error("Database connection failed, running in demo mode:", err);
-    return;
+    console.error("Database connection failed:", err);
+    throw err;
   }
   try {
     await sql`
@@ -245,6 +248,12 @@ function isSafaricomIP(req: express.Request): boolean {
 export const app = express();
 app.use(express.json());
 
+// Ensure DB is initialised before any API handler runs (critical for Vercel cold starts)
+app.use("/api", async (_req, _res, next) => {
+  if (dbInitPromise) await dbInitPromise;
+  next();
+});
+
 // Health
 app.get("/api/health", async (_req, res) => {
   try {
@@ -293,8 +302,9 @@ app.post("/api/users", async (req, res) => {
     `;
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Database error" });
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[POST /api/users]", msg);
+    res.status(500).json({ error: "Database error", detail: msg });
   }
 });
 
@@ -685,8 +695,11 @@ if (!process.env.VERCEL) {
     });
   })();
 } else {
-  // On Vercel, run DB init as a background side-effect
-  initDb().catch(console.error);
+  // On Vercel: kick off init immediately and reuse the same promise across
+  // all cold-start requests so the first request awaits table creation.
+  dbInitPromise = initDb().catch((err) => {
+    console.error("DB init failed on Vercel:", err);
+  });
 }
 
 export default app;
