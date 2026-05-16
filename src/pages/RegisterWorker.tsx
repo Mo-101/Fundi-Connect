@@ -38,6 +38,7 @@ export default function RegisterWorker() {
   const [tosAccepted, setTosAccepted] = useState(false);
   const [paymentInitiated, setPaymentInitiated] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [paymentSkipped, setPaymentSkipped] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'waiting' | 'confirmed' | 'failed'>('idle');
   
   const [search, setSearch] = useState('');
@@ -65,10 +66,10 @@ export default function RegisterWorker() {
   const handleSubmit = async () => {
     const userId = localStorage.getItem('mesh_user_id');
     if (!userId) return;
-    
+
     setLoading(true);
     try {
-      let finalPhotoUrl = formData.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}`;
+      const finalPhotoUrl = formData.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}`;
 
       await api.saveUser({
         id: userId,
@@ -77,28 +78,29 @@ export default function RegisterWorker() {
         photoUrl: finalPhotoUrl
       });
 
-      const workerProfile = {
-        userId: userId,
+      await api.saveWorkerProfile({
+        userId,
         skills: formData.skills,
         experienceYears: 0,
-        trustLevel: 'new' as const,
+        trustLevel: 'new',
         trustScore: 0,
         badges: [],
         completedJobsCount: 0,
         disputesCount: 0,
         avgRating: 0,
-        availability: 'available' as const,
+        availability: 'available',
         isVouched: false,
-        registrationPaid: true,
+        registrationPaid: paymentSuccess,
         bio: formData.bio,
-        lat: formData.coordinates?.lat,
-        lng: formData.coordinates?.lng
-      };
-      
-      await api.saveWorkerProfile(workerProfile as any);
+        // lat/lng required for map pin — default to Nairobi centre if not set
+        lat: formData.coordinates?.lat ?? -1.2921,
+        lng: formData.coordinates?.lng ?? 36.8219,
+      } as any);
+
       navigate('/smartphone/dashboard');
     } catch (err) {
-      console.error(err);
+      console.error('[RegisterWorker] submit failed:', err);
+      alert('Could not save your profile. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -615,6 +617,16 @@ export default function RegisterWorker() {
             <div className="flex items-center gap-3 text-stone-400 text-[10px] font-black uppercase tracking-[0.3em]">
                <Receipt className="w-4 h-4 text-brand-gold" /> Secure via Safaricom STK
             </div>
+
+            {/* Skip option — lets profile be created without blocking on payment */}
+            {!paymentSuccess && paymentStatus !== 'confirmed' && (
+              <button
+                onClick={() => setPaymentSkipped(true)}
+                className="w-full py-4 rounded-[24px] text-stone-400 font-black text-[10px] uppercase tracking-[0.25em] hover:text-brand-red transition-colors"
+              >
+                {paymentSkipped ? '✓ Continuing without payment' : 'Skip for now — pay later'}
+              </button>
+            )}
           </motion.div>
         )}
 
@@ -691,7 +703,7 @@ export default function RegisterWorker() {
             (step === 1 && !photoPreview) ||
             (step === 2 && formData.skills.length === 0) ||
             (step === 3 && (!formData.phone || !formData.location)) ||
-            (step === 4 && !paymentSuccess)
+            (step === 4 && !paymentSuccess && !paymentSkipped)
           }
           className={`flex-1 py-8 rounded-[32px] font-black uppercase tracking-[0.25em] text-sm shadow-2xl transition-all active:scale-95 disabled:opacity-50 border-b-4 ${step === 5 ? 'bg-brand-red text-white border-brand-brown hover:bg-brand-brown' : 'bg-brand-indigo text-white border-brand-indigo hover:opacity-90'}`}
         >
