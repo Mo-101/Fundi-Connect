@@ -71,6 +71,24 @@ async function initDb() {
     }
   }
   try {
+    // If users.id is UUID type (old schema), drop and recreate with TEXT.
+    // No real data exists yet so this is safe.
+    const colType = await sql`
+      SELECT data_type FROM information_schema.columns
+      WHERE table_name = 'users' AND column_name = 'id'
+    `;
+    if (colType.length > 0 && colType[0].data_type === 'uuid') {
+      console.log('[migrate] users.id is UUID — dropping tables and recreating with TEXT schema');
+      await sql`DROP TABLE IF EXISTS vouches CASCADE`;
+      await sql`DROP TABLE IF EXISTS donations CASCADE`;
+      await sql`DROP TABLE IF EXISTS messages CASCADE`;
+      await sql`DROP TABLE IF EXISTS transactions CASCADE`;
+      await sql`DROP TABLE IF EXISTS reviews CASCADE`;
+      await sql`DROP TABLE IF EXISTS jobs CASCADE`;
+      await sql`DROP TABLE IF EXISTS worker_profiles CASCADE`;
+      await sql`DROP TABLE IF EXISTS users CASCADE`;
+    }
+
     await sql`
       CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
@@ -189,6 +207,8 @@ async function initDb() {
     try { await sql`ALTER TABLE vouches ADD CONSTRAINT fk_vouch_worker FOREIGN KEY (worker_id) REFERENCES users(id) ON DELETE CASCADE`; } catch (e) {}
     // Each migration runs independently so one failure doesn't block the rest
     const migrate = async (q: TemplateStringsArray, ...v: unknown[]) => { try { await sql!(q, ...v); } catch (_) {} };
+    // id column may be UUID type from old schema — convert to TEXT so user_XXXX IDs work
+    await migrate`ALTER TABLE users ALTER COLUMN id TYPE TEXT USING id::TEXT`;
     await migrate`ALTER TABLE users ADD COLUMN IF NOT EXISTS name TEXT`;
     await migrate`ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT`;
     await migrate`ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT`;
