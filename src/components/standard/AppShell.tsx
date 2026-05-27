@@ -12,9 +12,11 @@ export default function SmartphoneLayout() {
   const isNavHidden = hideNavPaths.some(p => location.pathname.startsWith(p));
 
   return (
-    <div className="min-h-screen bg-stone-50 selection:bg-brand-indigo/20">
-      <main className={`mx-auto min-h-screen w-full bg-white shadow-2xl md:max-w-md lg:max-w-5xl md:pb-8 relative flex flex-col ${!isNavHidden ? 'pb-20' : ''}`}>
-        <div className="absolute inset-0 kanga-pattern opacity-5 pointer-events-none" />
+    <div className="min-h-screen bg-brand-cream selection:bg-brand-indigo/20 relative overflow-x-hidden">
+      <div className="pointer-events-none fixed left-[-7rem] top-[-7rem] h-72 w-72 rounded-full bg-brand-indigo/10 blur-3xl float-slow" />
+      <div className="pointer-events-none fixed right-[-8rem] bottom-20 h-80 w-80 rounded-full bg-brand-olive/10 blur-3xl float-slow" />
+      <main className={`mx-auto min-h-screen w-full glass-panel shadow-2xl md:max-w-md lg:max-w-5xl md:pb-8 relative flex flex-col ${!isNavHidden ? 'pb-20' : ''}`}>
+        <div className="absolute inset-0 kanga-pattern pointer-events-none" />
         <div className="relative z-10 flex-1 flex flex-col">
           <Outlet />
         </div>
@@ -31,9 +33,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isNavHidden = hideNavPaths.some(p => location.pathname.startsWith(p));
 
   return (
-    <div className="min-h-screen bg-stone-50 selection:bg-brand-indigo/20">
-      <main className={`mx-auto min-h-screen w-full bg-white shadow-2xl md:max-w-md lg:max-w-5xl md:pb-8 relative flex flex-col ${!isNavHidden ? 'pb-20' : ''}`}>
-        <div className="absolute inset-0 kanga-pattern opacity-5 pointer-events-none" />
+    <div className="min-h-screen bg-brand-cream selection:bg-brand-indigo/20 relative overflow-x-hidden">
+      <div className="pointer-events-none fixed left-[-7rem] top-[-7rem] h-72 w-72 rounded-full bg-brand-indigo/10 blur-3xl float-slow" />
+      <div className="pointer-events-none fixed right-[-8rem] bottom-20 h-80 w-80 rounded-full bg-brand-olive/10 blur-3xl float-slow" />
+      <main className={`mx-auto min-h-screen w-full glass-panel shadow-2xl md:max-w-md lg:max-w-5xl md:pb-8 relative flex flex-col ${!isNavHidden ? 'pb-20' : ''}`}>
+        <div className="absolute inset-0 kanga-pattern pointer-events-none" />
         <div className="relative z-10 flex-1 flex flex-col">
           {children}
         </div>
@@ -97,7 +101,7 @@ function BottomNav() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-stone-100 bg-white/95 px-2 pb-safe backdrop-blur-xl md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-white/60 bg-white/75 px-2 pb-safe backdrop-blur-2xl md:hidden">
         {activeRoutes.slice(0, 4).map((route) => {
           const isActive = location.pathname === route.path;
           return (
@@ -105,13 +109,13 @@ function BottomNav() {
               key={route.path}
               onClick={() => navigate(route.path)}
               className={`relative flex flex-col items-center justify-center space-y-1 transition-all active:scale-90 ${
-                isActive ? 'text-brand-red' : 'text-stone-300 hover:text-stone-600'
+                isActive ? 'text-brand-indigo' : 'text-slate-400 hover:text-brand-indigo'
               }`}
             >
               {isActive && (
                 <motion.div 
                   layoutId="bottom-nav-active"
-                  className="absolute -top-4 h-1 w-8 rounded-full bg-brand-red"
+                  className="absolute -top-4 h-1 w-8 rounded-full bg-brand-indigo"
                 />
               )}
               <route.icon className={`h-6 w-6 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />

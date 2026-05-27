@@ -19,14 +19,21 @@ export default function SmartphoneLayout() {
   const isMapPath = location.pathname === '/smartphone/mesh';
 
   return (
-    <div className={`min-h-screen bg-brand-cream ${isMapPath ? '' : 'pb-32'}`}>
+    <div className={`min-h-screen bg-brand-cream relative overflow-x-hidden ${isMapPath ? '' : 'pb-32'}`}>
+      {!isMapPath && (
+        <>
+          <div className="pointer-events-none fixed left-[-8rem] top-[-8rem] h-80 w-80 rounded-full bg-brand-indigo/10 blur-3xl float-slow" />
+          <div className="pointer-events-none fixed right-[-10rem] top-32 h-96 w-96 rounded-full bg-brand-olive/10 blur-3xl float-slow" />
+          <div className="pointer-events-none fixed inset-0 kanga-pattern" />
+        </>
+      )}
       <div className={`${isMapPath ? 'w-full h-full' : 'max-w-4xl mx-auto min-h-screen relative'}`}>
         <Outlet />
       </div>
 
       {!shouldHideNav && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-3rem)] max-w-md">
-          <div className="bg-white/80 backdrop-blur-xl rounded-[32px] p-2 flex justify-around items-center shadow-[0_20px_40px_rgba(0,0,0,0.1)] border border-white/50 ring-1 ring-black/5">
+          <div className="glass-panel holo-border rounded-[32px] p-2 flex justify-around items-center">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
@@ -35,17 +42,17 @@ export default function SmartphoneLayout() {
                   onClick={() => navigate(item.path)}
                   className="relative p-4 group flex flex-col items-center gap-1"
                 >
-                  <div className={`transition-all duration-300 ${isActive ? 'text-brand-red scale-110' : 'text-stone-300 group-hover:text-stone-600'}`}>
+                  <div className={`transition-all duration-300 ${isActive ? 'text-brand-indigo scale-110 drop-shadow-sm' : 'text-slate-400 group-hover:text-brand-indigo'}`}>
                     {item.icon}
                   </div>
                   {isActive && (
                     <motion.div 
                       layoutId="activeTab"
-                      className="absolute inset-0 bg-brand-red/5 rounded-2xl -z-10"
+                      className="absolute inset-0 rounded-2xl bg-brand-indigo/10 -z-10 pulse-glow"
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
                   )}
-                  <span className={`text-[8px] font-black uppercase tracking-widest leading-none ${isActive ? 'text-stone-900' : 'text-stone-300'}`}>
+                  <span className={`text-[8px] font-black uppercase tracking-widest leading-none ${isActive ? 'text-brand-black' : 'text-slate-400'}`}>
                     {item.label}
                   </span>
                 </button>

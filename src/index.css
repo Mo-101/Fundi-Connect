@@ -1,20 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
   
-  --color-brand-red: #E11D48;
-  --color-brand-gold: #F59E0B;
-  --color-brand-indigo: #1E3A8A;
-  --color-brand-brown: #334155;
-  --color-brand-cream: #F8FAFC;
-  --color-brand-black: #0F172A;
-  --color-brand-olive: #059669;
+  --color-brand-red: #FF3D7F;
+  --color-brand-gold: #F8D66D;
+  --color-brand-indigo: #263DFF;
+  --color-brand-brown: #342C5C;
+  --color-brand-cream: #F4F7FF;
+  --color-brand-black: #07111F;
+  --color-brand-olive: #00C2A8;
 
-  --shadow-neumorph-raised: 0 18px 48px rgba(15, 23, 42, 0.10), 0 1px 2px rgba(15, 23, 42, 0.06);
-  --shadow-neumorph-flat: 0 8px 24px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-neumorph-raised: 0 28px 90px rgba(7, 17, 31, 0.16), 0 1px 0 rgba(255, 255, 255, 0.80) inset;
+  --shadow-neumorph-flat: 0 12px 36px rgba(7, 17, 31, 0.10), 0 1px 0 rgba(255, 255, 255, 0.72) inset;
 }
 
 @layer base {
@@ -25,14 +25,21 @@
   body {
     @apply font-sans bg-brand-cream text-brand-black antialiased;
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.96)),
-      #f8fafc;
+      radial-gradient(circle at 12% 12%, rgba(38, 61, 255, 0.14), transparent 30%),
+      radial-gradient(circle at 88% 18%, rgba(0, 194, 168, 0.13), transparent 28%),
+      radial-gradient(circle at 50% 92%, rgba(255, 61, 127, 0.10), transparent 30%),
+      linear-gradient(180deg, #fbfdff 0%, #eef4ff 48%, #f7f8ff 100%);
+    background-attachment: fixed;
     letter-spacing: 0;
   }
   
   h1, h2, h3, h4, .serif {
-    @apply font-serif font-extrabold;
+    @apply font-serif font-bold;
     letter-spacing: 0;
+  }
+
+  * {
+    scrollbar-color: rgba(38, 61, 255, 0.35) transparent;
   }
 }
 
@@ -44,18 +51,62 @@
     box-shadow: var(--shadow-neumorph-flat);
   }
   .earth-map-overlay {
-    background: linear-gradient(to bottom, rgba(248, 250, 252, 0.94), rgba(248, 250, 252, 0.52));
+    background: linear-gradient(to bottom, rgba(244, 247, 255, 0.94), rgba(244, 247, 255, 0.52));
+  }
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.68);
+    box-shadow: var(--shadow-neumorph-flat);
+    backdrop-filter: blur(22px);
+  }
+  .holo-border {
+    position: relative;
+  }
+  .holo-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(38, 61, 255, 0.48), rgba(0, 194, 168, 0.36), rgba(255, 61, 127, 0.34));
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .float-slow {
+    animation: float-slow 7s ease-in-out infinite;
+  }
+  .pulse-glow {
+    animation: pulse-glow 3.8s ease-in-out infinite;
   }
 }
 
 .kanga-pattern {
   background-image:
-    linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
+    linear-gradient(rgba(38, 61, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 194, 168, 0.045) 1px, transparent 1px);
   background-size: 32px 32px;
-  opacity: 0.65;
+  opacity: 0.75;
 }
 
 .perspective-1000 {
   perspective: 1000px;
+}
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(38, 61, 255, 0), 0 18px 45px rgba(7, 17, 31, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 34px rgba(38, 61, 255, 0.18), 0 24px 60px rgba(7, 17, 31, 0.16);
+  }
 }
