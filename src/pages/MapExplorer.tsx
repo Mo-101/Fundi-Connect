@@ -1,21 +1,17 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  ChevronLeft, 
-  MapPin, 
+import {
   Search, 
   Navigation, 
   Compass, 
-  Star,
-  Briefcase,
   Phone,
   MessageCircle,
   X as XIcon
 } from 'lucide-react';
 import { api } from '../lib/api';
-import { Job, WorkerProfile, User } from '../types';
+import { WorkerProfile, User } from '../types';
 
 import { PageContainer } from '../components/standard/AppShell';
 import { LoadingState } from '../components/standard/StateComponents';
@@ -43,10 +39,14 @@ const mapOptions = {
   ]
 };
 
-export default function MapExplorer() {
+type MeshMapProps = {
+  mapsApiKey: string;
+};
+
+function MeshMap({ mapsApiKey }: MeshMapProps) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
+    googleMapsApiKey: mapsApiKey,
     libraries: LIBRARIES
   });
 
@@ -55,10 +55,8 @@ export default function MapExplorer() {
   }
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [activeLayer, setActiveLayer] = useState<'fundis' | 'jobs'>('fundis');
   const [selectedPin, setSelectedPin] = useState<any>(null);
   const [workers, setWorkers] = useState<(User & WorkerProfile)[]>([]);
-  const [jobs, setJobs] = useState<Job[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoadingData, setIsLoadingData] = useState(true);
   const navigate = useNavigate();
@@ -90,9 +88,6 @@ export default function MapExplorer() {
         setIsLoadingData(true);
         const workerProfiles = await api.getWorkers();
         setWorkers(workerProfiles as any);
-
-        const allJobs = await api.getJobs();
-        setJobs(allJobs.filter(j => j.status === 'open'));
       } catch (err) {
         console.error("Map data fetch error:", err);
       } finally {
@@ -162,35 +157,17 @@ export default function MapExplorer() {
           onUnmount={onUnmount}
           options={mapOptions}
         >
-          {activeLayer === 'fundis' ? (
-            workers.map(worker => (
-              <Marker
-                key={worker.userId}
-                position={{ lat: Number(worker.lat) || RUIRU_CENTER.lat, lng: Number(worker.lng) || RUIRU_CENTER.lng }}
-                onClick={() => setSelectedPin({ ...worker, type: 'fundi' })}
-                icon={{
-                  url: worker.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${worker.userId}`,
-                  scaledSize: new google.maps.Size(40, 40),
-                }}
-              />
-            ))
-          ) : (
-            jobs.map(job => (
-              <Marker
-                key={job.id}
-                position={{ lat: Number(job.lat) || RUIRU_CENTER.lat - 0.01, lng: Number(job.lng) || RUIRU_CENTER.lng + 0.01 }}
-                onClick={() => setSelectedPin({ ...job, type: 'job' })}
-                icon={{
-                  path: google.maps.SymbolPath.CIRCLE,
-                  fillColor: '#BF102E',
-                  fillOpacity: 1,
-                  strokeWeight: 2,
-                  strokeColor: '#FFFFFF',
-                  scale: 8,
-                }}
-              />
-            ))
-          )}
+          {workers.map(worker => (
+            <Marker
+              key={worker.userId}
+              position={{ lat: Number(worker.lat) || RUIRU_CENTER.lat, lng: Number(worker.lng) || RUIRU_CENTER.lng }}
+              onClick={() => setSelectedPin({ ...worker, type: 'fundi' })}
+              icon={{
+                url: worker.photoUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${worker.userId}`,
+                scaledSize: new google.maps.Size(40, 40),
+              }}
+            />
+          ))}
         </GoogleMap>
 
         {/* Floating Search Placeholder */}
@@ -217,12 +194,10 @@ export default function MapExplorer() {
            </button>
         </div>
 
-        {/* Layer Switcher */}
+        {/* Mesh Status */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
-          <div className="bg-stone-900/90 backdrop-blur-md px-6 py-3 rounded-full flex gap-6 text-white text-[10px] font-black uppercase tracking-widest shadow-2xl border border-white/10">
-            <button onClick={() => setActiveLayer('fundis')} className={`transition-all ${activeLayer === 'fundis' ? 'text-brand-gold scale-110 underline decoration-2 underline-offset-4' : 'opacity-40'}`}>Nearby Fundis</button>
-            <div className="w-px h-4 bg-white/20" />
-            <button onClick={() => setActiveLayer('jobs')} className={`transition-all ${activeLayer === 'jobs' ? 'text-brand-red scale-110 underline decoration-2 underline-offset-4' : 'opacity-40'}`}>Market Jobs</button>
+          <div className="bg-stone-900/90 backdrop-blur-md px-6 py-3 rounded-full text-white text-[10px] font-black uppercase tracking-widest shadow-2xl border border-white/10">
+            <span className="text-brand-gold">{isLoadingData ? 'Loading Fundis' : `${workers.length} Registered Fundi${workers.length === 1 ? '' : 's'}`}</span>
           </div>
         </div>
 
@@ -253,8 +228,7 @@ export default function MapExplorer() {
               </div>
               <button 
                 onClick={() => {
-                   if(selectedPin.type === 'fundi') navigate(`/smartphone/category/${encodeURIComponent(selectedPin.skills?.[0])}`);
-                   else navigate(`/smartphone/jobs?id=${selectedPin.id}`);
+                   navigate(`/smartphone/category/${encodeURIComponent(selectedPin.skills?.[0] || 'All')}`);
                 }}
                 className="w-full py-5 bg-stone-900 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all shadow-xl"
               >
@@ -286,4 +260,64 @@ export default function MapExplorer() {
       </div>
     </PageContainer>
   );
+}
+
+export default function MapExplorer() {
+  const [mapsApiKey, setMapsApiKey] = useState<string | null>(
+    import.meta.env.VITE_GOOGLE_MAPS_API_KEY || null
+  );
+  const [configLoaded, setConfigLoaded] = useState(Boolean(import.meta.env.VITE_GOOGLE_MAPS_API_KEY));
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (mapsApiKey) return;
+
+    const loadMapConfig = async () => {
+      try {
+        const res = await fetch('/api/config/maps');
+        const data = await res.json();
+        setMapsApiKey(data.apiKey || null);
+      } catch (err) {
+        console.error("Map config fetch error:", err);
+      } finally {
+        setConfigLoaded(true);
+      }
+    };
+
+    loadMapConfig();
+  }, [mapsApiKey]);
+
+  if (!configLoaded) {
+    return (
+      <PageContainer className="p-0">
+        <div className="h-full flex items-center justify-center bg-stone-50">
+          <LoadingState message="Loading main map key..." />
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (!mapsApiKey) {
+    return (
+      <PageContainer className="p-0">
+        <div className="h-full flex flex-col items-center justify-center bg-stone-50 p-8 text-center space-y-4">
+          <div className="w-16 h-16 bg-red-50 text-brand-red rounded-full flex items-center justify-center">
+            <XIcon className="w-8 h-8" />
+          </div>
+          <h2 className="text-2xl font-black serif text-stone-900">Map key missing.</h2>
+          <p className="text-stone-500 serif italic max-w-sm">
+            Add GOOGLE_MAPS_API_KEY to .env and restart the local server.
+          </p>
+          <button
+            onClick={() => navigate('/smartphone/dashboard')}
+            className="px-8 py-4 bg-stone-900 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl"
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  return <MeshMap mapsApiKey={mapsApiKey} />;
 }
