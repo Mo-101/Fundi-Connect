@@ -10,6 +10,8 @@ import {
   Compass, 
   Star,
   Briefcase,
+  Phone,
+  MessageCircle,
   X as XIcon
 } from 'lucide-react';
 import { api } from '../lib/api';
@@ -60,6 +62,18 @@ export default function MapExplorer() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoadingData, setIsLoadingData] = useState(true);
   const navigate = useNavigate();
+
+  const getPhoneHref = (phone?: string) => {
+    if (!phone) return null;
+    const digits = phone.replace(/\D/g, '');
+    return digits ? `tel:+${digits}` : null;
+  };
+
+  const getWhatsAppHref = (phone?: string) => {
+    if (!phone) return null;
+    const digits = phone.replace(/\D/g, '');
+    return digits ? `https://wa.me/${digits}` : null;
+  };
 
   const onLoad = useCallback(function callback(m: google.maps.Map) {
     setMap(m);
@@ -246,6 +260,26 @@ export default function MapExplorer() {
               >
                 View Details
               </button>
+              {selectedPin.type === 'fundi' && selectedPin.phone && (
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <a
+                    href={getPhoneHref(selectedPin.phone) || undefined}
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-brand-indigo py-4 text-[10px] font-black uppercase tracking-widest text-white shadow-lg active:scale-95"
+                  >
+                    <Phone className="h-4 w-4" />
+                    Call
+                  </a>
+                  <a
+                    href={getWhatsAppHref(selectedPin.phone) || undefined}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-brand-gold py-4 text-[10px] font-black uppercase tracking-widest text-brand-indigo shadow-lg active:scale-95"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    WhatsApp
+                  </a>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -253,4 +287,3 @@ export default function MapExplorer() {
     </PageContainer>
   );
 }
-
