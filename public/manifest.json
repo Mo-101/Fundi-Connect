@@ -1,0 +1,21 @@
+{
+  "name": "FundiConnect",
+  "short_name": "Fundi",
+  "start_url": "/smartphone",
+  "display": "standalone",
+  "background_color": "#FDFCF7",
+  "theme_color": "#BF102E",
+  "description": "Jua Kali Services. Verified fundis for every neighbor.",
+  "icons": [
+    {
+      "src": "https://api.dicebear.com/7.x/initials/svg?seed=FC&backgroundColor=BF102E",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "https://api.dicebear.com/7.x/initials/svg?seed=FC&backgroundColor=BF102E",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
