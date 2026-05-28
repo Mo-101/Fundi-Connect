@@ -12,7 +12,9 @@ import {
   COMMUNITY_WALLET,
   type DonationResult,
 } from '../lib/minipay';
+import { api } from '../lib/api';
 import { PageContainer, PageHeader } from '../components/standard/AppShell';
+import type { Address } from 'viem';
 
 type Step = 'pick' | 'confirm' | 'sending' | 'success' | 'failed';
 
@@ -28,13 +30,26 @@ export default function AsanteDrop() {
   const [balance, setBalance] = useState<string | null>(null);
   const [result, setResult] = useState<DonationResult | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const [fundiWallet, setFundiWallet] = useState<Address | null>(null);
 
   const jobId = searchParams.get('jobId');
+  const workerId = searchParams.get('workerId');
   const workerName = searchParams.get('worker') || 'the fundi';
   const nextRoute = searchParams.get('next') || '/smartphone/dashboard';
   const isEntry = searchParams.get('entry') === 'true';
   const miniPay = isMiniPayBrowser();
   const hasCelo = isCeloWalletAvailable();
+
+  // Look up fundi's wallet if workerId is provided
+  useEffect(() => {
+    if (workerId) {
+      api.getWorkerWallet(workerId)
+        .then(data => {
+          if (data.walletAddress) setFundiWallet(data.walletAddress as Address);
+        })
+        .catch(() => {});
+    }
+  }, [workerId]);
 
   useEffect(() => {
     if (hasCelo) {
@@ -62,7 +77,9 @@ export default function AsanteDrop() {
     if (!selected || !wallet) return;
     setStep('sending');
     try {
-      const donation = await sendAsanteDrop(selected);
+      // Send to fundi's wallet directly if available, otherwise community pool
+      const recipient = fundiWallet || undefined;
+      const donation = await sendAsanteDrop(selected, recipient);
 
       // Record on server
       const userId = localStorage.getItem('mesh_user_id');
@@ -73,7 +90,7 @@ export default function AsanteDrop() {
           id: `don_${Date.now()}`,
           jobId: jobId || null,
           donorAddress: donation.from,
-          userId: userId || null,
+          userId: workerId || userId || null,
           amountKES: donation.amount,
           txHash: donation.txHash,
           tokenSymbol: donation.tokenSymbol,
@@ -88,8 +105,8 @@ export default function AsanteDrop() {
         setErrorMsg('You cancelled the transaction.');
       } else if (msg.includes('insufficient') || msg.includes('balance')) {
         setErrorMsg(`Not enough cKES. Top up your MiniPay wallet first.`);
-      } else if (msg.includes('VITE_COMMUNITY_WALLET')) {
-        setErrorMsg('Community wallet address not configured yet.');
+      } else if (msg.includes('recipient') || msg.includes('VITE_COMMUNITY_WALLET') || msg.includes('wallet address')) {
+        setErrorMsg('No wallet address found. Ask the fundi to set up their MiniPay wallet.');
       } else {
         setErrorMsg(msg);
       }

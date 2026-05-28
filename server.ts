@@ -152,7 +152,8 @@ async function initDb() {
         lat NUMERIC,
         lng NUMERIC,
         is_vouched BOOLEAN DEFAULT FALSE,
-        registration_paid BOOLEAN DEFAULT FALSE
+        registration_paid BOOLEAN DEFAULT FALSE,
+        wallet_address TEXT
       );
     `;
     await sql`
@@ -260,6 +261,7 @@ async function initDb() {
     await migrate`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS bio TEXT`;
     await migrate`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS lat NUMERIC`;
     await migrate`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS lng NUMERIC`;
+    await migrate`ALTER TABLE worker_profiles ADD COLUMN IF NOT EXISTS wallet_address TEXT`;
     console.log("Database initialized successfully.");
   } catch (err) {
     console.error("Failed to initialize database:", err);
@@ -432,7 +434,8 @@ app.get("/api/workers", async (_req, res) => {
       badges: w.badges, completedJobsCount: w.completed_jobs_count,
       disputesCount: w.disputes_count, avgRating: w.avg_rating,
       availability: w.availability, bio: w.bio, lat: w.lat, lng: w.lng,
-      isVouched: w.is_vouched, registrationPaid: w.registration_paid
+      isVouched: w.is_vouched, registrationPaid: w.registration_paid,
+      walletAddress: w.wallet_address
     })));
   } catch (err) {
     console.error(err);
@@ -503,7 +506,8 @@ app.get("/api/workers/:id", async (req, res) => {
       trustScore: w.trust_score, badges: w.badges,
       completedJobsCount: w.completed_jobs_count, disputesCount: w.disputes_count,
       avgRating: w.avg_rating, availability: w.availability, bio: w.bio,
-      lat: w.lat, lng: w.lng, isVouched: w.is_vouched, registrationPaid: w.registration_paid
+      lat: w.lat, lng: w.lng, isVouched: w.is_vouched, registrationPaid: w.registration_paid,
+      walletAddress: w.wallet_address
     });
   } catch {
     res.status(500).json({ error: "Database error" });
@@ -512,11 +516,11 @@ app.get("/api/workers/:id", async (req, res) => {
 
 app.post("/api/workers", async (req, res) => {
   if (!sql) return res.status(503).json({ error: "Database not available" });
-  const { userId, skills, experienceYears, trustLevel, trustScore, availability, bio, lat, lng, completedJobsCount, disputesCount, avgRating, isVouched, registrationPaid } = req.body;
+  const { userId, skills, experienceYears, trustLevel, trustScore, availability, bio, lat, lng, completedJobsCount, disputesCount, avgRating, isVouched, registrationPaid, walletAddress } = req.body;
   try {
     await sql`
-      INSERT INTO worker_profiles (user_id, skills, experience_years, trust_level, trust_score, availability, bio, lat, lng, completed_jobs_count, disputes_count, avg_rating, is_vouched, registration_paid)
-      VALUES (${userId}, ${skills || null}, ${experienceYears || 0}, ${trustLevel || 'new'}, ${trustScore || 0}, ${availability || 'available'}, ${bio || null}, ${lat || null}, ${lng || null}, ${completedJobsCount || 0}, ${disputesCount || 0}, ${avgRating || 0}, ${isVouched || false}, ${registrationPaid || false})
+      INSERT INTO worker_profiles (user_id, skills, experience_years, trust_level, trust_score, availability, bio, lat, lng, completed_jobs_count, disputes_count, avg_rating, is_vouched, registration_paid, wallet_address)
+      VALUES (${userId}, ${skills || null}, ${experienceYears || 0}, ${trustLevel || 'new'}, ${trustScore || 0}, ${availability || 'available'}, ${bio || null}, ${lat || null}, ${lng || null}, ${completedJobsCount || 0}, ${disputesCount || 0}, ${avgRating || 0}, ${isVouched || false}, ${registrationPaid || false}, ${walletAddress || null})
       ON CONFLICT (user_id) DO UPDATE SET
         skills = COALESCE(EXCLUDED.skills, worker_profiles.skills),
         experience_years = COALESCE(EXCLUDED.experience_years, worker_profiles.experience_years),
@@ -530,7 +534,8 @@ app.post("/api/workers", async (req, res) => {
         disputes_count = COALESCE(EXCLUDED.disputes_count, worker_profiles.disputes_count),
         avg_rating = COALESCE(EXCLUDED.avg_rating, worker_profiles.avg_rating),
         is_vouched = COALESCE(EXCLUDED.is_vouched, worker_profiles.is_vouched),
-        registration_paid = COALESCE(EXCLUDED.registration_paid, worker_profiles.registration_paid)
+        registration_paid = COALESCE(EXCLUDED.registration_paid, worker_profiles.registration_paid),
+        wallet_address = COALESCE(EXCLUDED.wallet_address, worker_profiles.wallet_address)
     `;
     res.json({ success: true });
   } catch (err) {
@@ -659,6 +664,33 @@ app.post("/api/messages", async (req, res) => {
   try {
     await sql`INSERT INTO messages (id, job_id, sender_id, content) VALUES (${id}, ${jobId}, ${senderId}, ${content})`;
     res.json({ success: true });
+  } catch {
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+// Wallet address (MiniPay)
+app.patch("/api/workers/:id/wallet", async (req, res) => {
+  if (!sql) return res.status(503).json({ error: "Database not available" });
+  const { walletAddress } = req.body;
+  if (!walletAddress || !/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
+    return res.status(400).json({ error: "Valid Celo wallet address required (0x...)" });
+  }
+  try {
+    await sql`UPDATE worker_profiles SET wallet_address = ${walletAddress} WHERE user_id = ${req.params.id}`;
+    res.json({ success: true });
+  } catch {
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+// Get fundi wallet for direct Asante Drop — returns wallet address for a specific worker
+app.get("/api/workers/:id/wallet", async (req, res) => {
+  if (!sql) return res.status(503).json({ error: "Database not available" });
+  try {
+    const rows = await sql`SELECT wallet_address FROM worker_profiles WHERE user_id = ${req.params.id}`;
+    if (rows.length === 0) return res.status(404).json({ error: "Worker not found" });
+    res.json({ walletAddress: rows[0].wallet_address || null });
   } catch {
     res.status(500).json({ error: "Database error" });
   }

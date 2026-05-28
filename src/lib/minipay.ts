@@ -115,8 +115,9 @@ export interface DonationResult {
   tokenSymbol: string;
 }
 
-export async function sendAsanteDrop(amountKES: number): Promise<DonationResult> {
-  if (!COMMUNITY_WALLET) throw new Error('Community wallet address not configured (VITE_COMMUNITY_WALLET)');
+export async function sendAsanteDrop(amountKES: number, recipientWallet?: Address): Promise<DonationResult> {
+  const target = recipientWallet || COMMUNITY_WALLET;
+  if (!target) throw new Error('No recipient wallet address configured');
 
   const walletClient = getWalletClient();
   const [from] = await walletClient.requestAddresses();
@@ -129,7 +130,7 @@ export async function sendAsanteDrop(amountKES: number): Promise<DonationResult>
     address: CKES,
     abi: ERC20_ABI,
     functionName: 'transfer',
-    args: [COMMUNITY_WALLET, amountWei],
+    args: [target, amountWei],
     account: from,
     chain: CHAIN,
   });
@@ -138,7 +139,7 @@ export async function sendAsanteDrop(amountKES: number): Promise<DonationResult>
     txHash: txHash as string,
     amount: amountKES,
     from,
-    to: COMMUNITY_WALLET,
+    to: target,
     tokenSymbol: 'cKES',
   };
 }

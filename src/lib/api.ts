@@ -201,5 +201,22 @@ export const api = {
       headers: getHeaders()
     });
     return handleResponse(res);
+  },
+
+  // Wallet
+  async getWorkerWallet(userId: string): Promise<{ walletAddress: string | null }> {
+    const res = await fetch(`${API_BASE}/workers/${userId}/wallet`, {
+      headers: getHeaders()
+    });
+    return handleResponse(res);
+  },
+
+  async updateWorkerWallet(userId: string, walletAddress: string): Promise<void> {
+    const res = await fetch(`${API_BASE}/workers/${userId}/wallet`, {
+      method: 'PATCH',
+      headers: getHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ walletAddress }),
+    });
+    await handleResponse(res);
   }
 };

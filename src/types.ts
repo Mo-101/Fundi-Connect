@@ -33,6 +33,7 @@ export interface WorkerProfile {
   lat?: number;
   lng?: number;
   coordinates?: { lat: number; lng: number };
+  walletAddress?: string;
 }
 
 export interface IntroducerProfile {
