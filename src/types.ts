@@ -1,83 +1,122 @@
-export type UserRole = 'worker' | 'client' | 'introducer' | 'agent' | 'admin';
-export type AccessType = 'smartphone' | 'ussd' | 'sms' | 'voice' | 'kiosk';
-export type JobStatus = 'pending_payment' | 'open' | 'accepted' | 'in_progress' | 'completed' | 'reviewed' | 'closed' | 'disputed';
-export type Urgency = 'today' | 'this_week' | 'flexible';
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export type TrustLevel = 'new' | 'vouched' | 'verified' | 'trusted' | 'master';
 
-export interface User {
+export interface WorkerProfile extends Worker {
+  disputesCount?: number;
+  avgRating?: number;
+  badges?: string[];
+  isVouched?: boolean;
+  trustScore?: number;
+  trustLevel?: TrustLevel;
+}
+
+export interface Worker {
   id: string;
   name: string;
   phone: string;
-  role: UserRole;
-  location: string;
-  accessType: AccessType;
-  createdAt: any; // ServerTimestamp
-  photoUrl?: string;
-}
-
-export interface WorkerProfile {
-  userId: string;
-  skills: string[];
-  trustLevel: TrustLevel;
-  trustScore: number;
-  badges: string[];
+  avatar: string;
+  category: string; // e.g. "Electrical", "Plumbing", "Masonry", "Carpentry", "Smart Tech", "Solar Energy"
+  subSkills: string[];
+  rating: number;
   completedJobsCount: number;
-  disputesCount: number;
-  avgRating: number;
-  availability: 'available' | 'busy' | 'away';
-  isVouched: boolean;
-  registrationPaid: boolean;
-  portfolio?: string[];
-  bio?: string;
-  tradeSymbol?: string; // e.g., 'hammer', 'wrench'
-  lat?: number;
-  lng?: number;
-  coordinates?: { lat: number; lng: number };
-  walletAddress?: string;
-}
-
-export interface IntroducerProfile {
-  userId: string;
-  organization: string; // e.g. "St. Jude's Church", "Joy Chama"
-  role: string; // e.g. "Pastor", "Chairlady"
-  vouchCount: number;
-  honorKept: number; // Percentage
-  totalJobsGenerated: number;
-}
-
-export interface Job {
-  id: string;
-  clientId: string;
-  workerId?: string;
-  skillNeeded: string;
-  description: string;
-  location: string;
-  lat?: number;
-  lng?: number;
-  coordinates?: { lat: number; lng: number };
-  urgency: Urgency;
-  budget: string;
-  status: JobStatus;
-  createdAt: any;
-  completedAt?: any;
-}
-
-export interface Vouch {
-  id: string;
-  workerId: string;
-  voucherName: string;
-  voucherPhone: string;
-  relationship: string;
-  trustWeight: number;
-  createdAt: any;
+  hourlyRateKsh: number; // Ksh is Kenyan Shilling
+  locationName: string; // e.g. "Kibera, Nairobi", "Kangemi", "Rongai"
+  coordinates: { lat: number; lng: number };
+  isOnline: boolean;
+  isVerified: boolean;
+  verificationLevel: "Tier-1" | "Tier-2" | "Tier-3" | null;
+  hasUssdFallback: boolean; // capable of accepting jobs via SMS/USSD automatically
+  bio: string;
+  reviews: Review[];
+  featured?: boolean;
 }
 
 export interface Review {
   id: string;
-  jobId: string;
-  reviewerId: string;
-  revieweeId: string;
+  reviewerName: string;
   rating: number;
   comment: string;
-  createdAt: any;
+  date: string;
+}
+
+export interface Job {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  budgetKsh: number;
+  locationName: string;
+  coordinates: { lat: number; lng: number };
+  postedDate: string;
+  status: "open" | "assigned" | "completed" | "cancelled";
+  urgency: "immediate" | "standard" | "scheduled";
+  clientId: string;
+  clientName: string;
+  clientPhone: string;
+  assignedWorkerId?: string;
+  bids?: JobBid[];
+  paymentStatus: "unpaid" | "escrowed" | "released";
+  hasVoiceNote?: boolean;
+}
+
+export interface JobBid {
+  id: string;
+  workerId: string;
+  workerName: string;
+  workerRating: number;
+  amountKsh: number;
+  durationHours: number;
+  proposal: string;
+  postedDate: string;
+}
+
+export interface Kiosk {
+  id: string;
+  name: string;
+  agentName: string;
+  phone: string;
+  locationName: string;
+  coordinates: { lat: number; lng: number };
+  servicesCount: number;
+  isVerifiedHub: boolean;
+}
+
+export interface Message {
+  id: string;
+  channelId: string; // job ID or peer conversation
+  senderId: string;
+  senderName: string;
+  senderType: "client" | "worker";
+  text: string;
+  timestamp: string;
+  isRead: boolean;
+  isAudio?: boolean;
+  audioDuration?: string;
+}
+
+export interface CommunityPost {
+  id: string;
+  authorName: string;
+  authorRole: "worker" | "client" | "kiosk";
+  title: string;
+  content: string;
+  tags: string[];
+  likes: number;
+  repliesCount: number;
+  postedDate: string;
+  isSticky?: boolean;
+}
+
+export interface AsanteDrop {
+  id: string;
+  workerId: string;
+  workerName: string;
+  amountCelo: number; // Asante drops using MiniPay / CELO network
+  transactionHash: string;
+  reason: string;
+  timestamp: string;
 }
